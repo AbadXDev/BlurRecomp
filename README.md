@@ -12,15 +12,23 @@ By [AbadXDev](https://github.com/AbadXDev).
 
 ## Status (2026-11-17)
 
-- ✅ Original game image verified and extracted (Title ID `41560845`)
+- ✅ Original game image verified and extracted (Title ID `41560845`), byte-identical to the source image
 - ✅ Full PPC → C++ recompilation: 76,019 functions, native arm64 build
 - ✅ The game **boots natively on macOS**: kernel phase reaches Runtime, all boot packages mount (`root`, `root_streaming`, `shaders-speed`, `gamedata`)
-- ✅ Xenos PM4 command stream decoded (hardware ring + indirect buffers) and executed on the host (CP executor with fence/flip protocol)
-- ✅ Frame loop running at **~90 fps** presenting frames, no GPU hangs
-- 🔄 In progress: the engine stalls after the boot packages — scene loading never starts, so nothing is drawn yet
+- ✅ Boot sequence completes: the main loop runs on its own thread, `Start` runs, and the loader finishes the boot packages (`gamedata_boot.pak`)
+- ✅ Intro movies load and play through (Bink), and the master shader files load — 562 files per boot
+- ✅ The engine's screen framework dispatches every frame (thousands of dispatches per boot)
+- ✅ Stability hardening: a host threading race that froze movie playback is fixed; a stuck GPU frame no longer freezes the game (fence watchdog); a runaway memory-budget report job is neutralized
+- ✅ Xenos PM4 command stream decoded (hardware ring + indirect buffers) and executed on the host (CP executor with fence/flip protocol); frame loop presents at **~65–90 fps**
+- 🔄 In progress: the game holds on its first (boot/loading) screen — only one screen is registered and nothing registers the next one yet; tracing what that screen is waiting for
 - ⬜ Draw execution on the host GPU (DRAW_INDX / IM_LOAD)
 - ⬜ Xenos shader microcode translation
 - ⬜ Input, audio, save data
+
+## Progress log
+
+- **2026-11-16** — Project start: game image verified and extracted; full recompilation builds and boots to a frame loop.
+- **2026-11-17** — PM4 command stream decoded and the frame loop stabilized at ~90 fps. Loader breakthrough: the main loop was running synchronously on the boot thread and starving `Start` — with the loop on its own thread, the boot sequence completes, the boot packages load and the intro movies play. The movie freeze was traced to a lost-wakeup race in the host's synchronization objects and fixed. The engine's screen framework now dispatches every frame. Two intermittent freezes (a GPU fence that never completes, and a memory-budget report job spinning on a collapsed pointer) were root-caused, contained and verified live. Current frontier: the first screen never hands over to the next one.
 
 ## What is this?
 
