@@ -1,0 +1,146 @@
+[main]
+file_path = "../private/default.xex"
+out_directory_path = "../ppc"
+# Blur Recomp (2026-11-16): tablas de saltos (switch) generadas con un
+# XenonAnalyse parcheado (patron LIS,RLWINM,ADDI,LWZX,MTCTR,BCTR que usa
+# el compilador de Blur). Sin esto, los bctr de los switch se emitian como
+# llamada indirecta a traves de la tabla y el arranque moria llamando a 0.
+switch_table_file_path = "blur_switch_tables.toml"
+
+skip_lr = false
+skip_msr = false
+ctr_as_local = false
+xer_as_local = false
+reserved_as_local = false
+cr_as_local = false
+non_argument_as_local = false
+non_volatile_as_local = false
+
+# Blur Recomp (2026-11-16): direcciones CRT de guardado/restaurado de registros.
+# Sin estas claves el codegen dejaba 18.463 saltos a __restgprlr_* como
+# comentarios ERROR y los epilogos no restauraban r28-r31 (bucle en el arranque).
+restgprlr_14_address = 0x8294F440
+savegprlr_14_address = 0x8294F3F0
+
+# Puntos de entrada interiores (colas compartidas) no descubiertos por el analisis.
+functions = [
+  { address = 0x8223B6F8, size = 0x504 },
+  { address = 0x8215DF20, size = 0x8 },
+  { address = 0x8223B6F0, size = 0x50C },
+  { address = 0x8223B704, size = 0x4F8 },
+  { address = 0x8223CEFC, size = 0x128 },
+  { address = 0x8223CFE0, size = 0x44 },
+  { address = 0x8223CFE8, size = 0x3C },
+  { address = 0x8223D014, size = 0x10 },
+  { address = 0x8223D030, size = 0x18 },
+  { address = 0x8223D040, size = 0x8 },
+  { address = 0x8226E778, size = 0x48 },
+  { address = 0x8226E788, size = 0x38 },
+  { address = 0x8226E810, size = 0x84 },
+  { address = 0x8226E844, size = 0x50 },
+  { address = 0x8226E878, size = 0x1C },
+  { address = 0x8226E888, size = 0xC },
+  { address = 0x822CB404, size = 0x28 },
+  { address = 0x822CBB58, size = 0x1C },
+  { address = 0x822CBB5C, size = 0x18 },
+  { address = 0x822CBB6C, size = 0x8 },
+  { address = 0x8234F6CC, size = 0x1C },
+  { address = 0x8234F6DC, size = 0xC },
+  { address = 0x823CC0E4, size = 0x2C },
+  { address = 0x824B4CA4, size = 0x38 },
+  { address = 0x824B4CD4, size = 0x8 },
+  { address = 0x825A268C, size = 0x14 },
+  { address = 0x82753FD8, size = 0x68 },
+  { address = 0x82754044, size = 0x10 },
+  { address = 0x827A9D80, size = 0x40 },
+  { address = 0x827A9DA0, size = 0x20 },
+  { address = 0x827A9DB8, size = 0x8 },
+  { address = 0x8289DA04, size = 0x8 },
+  { address = 0x8295E55C, size = 0x14 },
+  { address = 0x82966BD0, size = 0x88 },
+  { address = 0x82966C6C, size = 0xC },
+  { address = 0x82966CAC, size = 0x8 },
+  { address = 0x82966DD4, size = 0x14 },
+  { address = 0x82967140, size = 0x8 },
+  { address = 0x8296714C, size = 0x8 },
+  { address = 0x82967280, size = 0x8 },
+  { address = 0x82967968, size = 0x14 },
+  { address = 0x82967970, size = 0xC },
+  { address = 0x82967A0C, size = 0xC },
+  { address = 0x82971E2C, size = 0x18 },
+  { address = 0x8298F840, size = 0x18 },
+  { address = 0x82992364, size = 0x8 },
+  { address = 0x8299B618, size = 0x270 },
+  { address = 0x822516DC, size = 0x348 },
+  { address = 0x82170FC0, size = 0x18 },
+  { address = 0x82220004, size = 0x1C },
+  { address = 0x8294FFF0, size = 0x34 },
+  { address = 0x82950004, size = 0x20 },
+  { address = 0x82960080, size = 0xFC },
+  { address = 0x82A60010, size = 0x20 },
+  # Blur Recomp (2026-11-16): 60 etiquetas de las 248 tablas switch que
+  # apuntan a cuerpos dentro de OTRAS funciones (colas compartidas). Sin
+  # registrarlas, el despacho del switch las llamaba por la tabla de
+  # funciones y caian en la guardia como destino nulo (primera victima:
+  # 0x8234F69C). Escaneo sistematico de las tablas, validado en VM (ppc9).
+    { address = 0x8215DEC8, size = 0x18 },
+    { address = 0x8217A928, size = 0x8 },
+    { address = 0x8217AD20, size = 0x8 },
+    { address = 0x82186FFC, size = 0x8 },
+    { address = 0x8226E82C, size = 0x18 },
+    { address = 0x8226E874, size = 0x4 },
+    { address = 0x822CB794, size = 0x1C },
+    { address = 0x822D5614, size = 0x8 },
+    { address = 0x822F19E8, size = 0xC },
+    { address = 0x822F1A58, size = 0xC },
+    { address = 0x822F1AC8, size = 0xC },
+    { address = 0x822F1B38, size = 0xC },
+    { address = 0x82313914, size = 0x14 },
+    { address = 0x8232CDFC, size = 0xC },
+    { address = 0x82336C70, size = 0x8 },
+    { address = 0x823494B0, size = 0x8 },
+    { address = 0x823496C0, size = 0x8 },
+    { address = 0x8234F69C, size = 0xC },
+    { address = 0x8235C28C, size = 0x8 },
+    { address = 0x8235C344, size = 0x8 },
+    { address = 0x8235C3EC, size = 0x8 },
+    { address = 0x8235C4D0, size = 0x8 },
+    { address = 0x8235C4EC, size = 0x4 },
+    { address = 0x8235C7A4, size = 0x1C },
+    { address = 0x8235D4A4, size = 0x8 },
+    { address = 0x82369B90, size = 0x8 },
+    { address = 0x82380D5C, size = 0x4 },
+    { address = 0x82380DF4, size = 0x4 },
+    { address = 0x823A222C, size = 0x4 },
+    { address = 0x823A2864, size = 0x4 },
+    { address = 0x823CC000, size = 0x38 },
+    { address = 0x823D82AC, size = 0xC },
+    { address = 0x8240FD4C, size = 0xC },
+    { address = 0x8240FE30, size = 0x8 },
+    { address = 0x8240FF80, size = 0x8 },
+    { address = 0x8243AD70, size = 0xC },
+    { address = 0x82595A0C, size = 0xC },
+    { address = 0x8259CF3C, size = 0xC },
+    { address = 0x8259D028, size = 0xC },
+    { address = 0x825A2630, size = 0x8 },
+    { address = 0x825A2668, size = 0x24 },
+    { address = 0x825A2678, size = 0x14 },
+    { address = 0x825A2688, size = 0x4 },
+    { address = 0x825A8620, size = 0x8 },
+    { address = 0x825C5604, size = 0x8 },
+    { address = 0x8270FA18, size = 0x8 },
+    { address = 0x8270FAE8, size = 0x8 },
+    { address = 0x827144BC, size = 0x4 },
+    { address = 0x827A9F4C, size = 0x10 },
+    { address = 0x827A9F88, size = 0x4 },
+    { address = 0x827C569C, size = 0xC },
+    { address = 0x827E0110, size = 0x4 },
+    { address = 0x827F3F90, size = 0xC },
+    { address = 0x82859068, size = 0x4 },
+    { address = 0x82859BC8, size = 0xC },
+    { address = 0x828A3448, size = 0x14 },
+    { address = 0x828B4794, size = 0x8 },
+    { address = 0x828B4854, size = 0x4 },
+    { address = 0x828DC024, size = 0x8 },
+    { address = 0x82927928, size = 0x8 },
+]

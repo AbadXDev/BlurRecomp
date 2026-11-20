@@ -1,0 +1,6 @@
+.DS_Store
+out/
+*.app
+BlurRecompLib/private/
+BlurRecompLib/ppc/
+BlurRecompLib/shader/shader_cache.cpp
